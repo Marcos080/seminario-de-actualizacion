@@ -6,6 +6,7 @@ using namespace std;
 struct Cliente {
     string usuario;
     string contrasena;
+    string tipo;  // "Administrador", "Cliente", "Vendedor", "Deposito"
 };
 
 struct Articulo {
@@ -13,6 +14,13 @@ struct Articulo {
     string nombre;
     float precio;
     int stock;
+};
+
+vector<Cliente> usuarios = {
+    {"admin", "Admin123!!", "Administrador"},
+    {"cliente1", "Cliente123!!", "Cliente"},
+    {"vendedor1", "Vendedor123!!", "Vendedor"},
+    {"deposito1", "Deposito123!!", "Deposito"}
 };
 
 vector<Articulo> articulos = {
@@ -150,33 +158,6 @@ void MenuArticulos() {
     } while (opcion != 6);
 }
 
-void PedirCredencial(string &usuario, string &contrasena) {
-    cout << "Ingrese un usuario: ";
-    cin >> usuario;
-    cout << "Ingrese una contraseña: ";
-    cin >> contrasena;
-}
-
-bool VerificacionCredencial(Cliente &usuarioCorrecto) {
-    string usuarioIngresado, contrasenaIngresada;
-    const int MAXintentos = 3;
-    int intentos = 0;
-
-    while (intentos < MAXintentos) {
-        PedirCredencial(usuarioIngresado, contrasenaIngresada);
-        if (usuarioIngresado == usuarioCorrecto.usuario && contrasenaIngresada == usuarioCorrecto.contrasena) {
-            cout << "Bienvenido, " << usuarioCorrecto.usuario << "!\n";
-            return true;
-        } else {
-            cout << "Usuario o contraseña incorrectos. Intento " << intentos + 1 << " de " << MAXintentos << endl;
-        }
-        intentos++;
-    }
-
-    cout << "Usuario bloqueado por exceso de intentos fallidos.\n";
-    return false;
-}
-
 bool ValidarContrasena(const string &contrasena) {
     if (contrasena.length() < 8 || contrasena.length() > 16) return false;
 
@@ -212,19 +193,36 @@ void CambiarContrasena(Cliente &usuario) {
     cout << "Contraseña actualizada exitosamente!\n";
 }
 
-void CrearCuenta(Cliente &usuario) {
-    cout << "\n--- Crear Cuenta ---\n";
-    cout << "Ingrese un nombre de usuario: ";
-    cin >> usuario.usuario;
-    cout << "Ingrese una contraseña: ";
-    cin >> usuario.contrasena;
-    cout << "Cuenta creada exitosamente!\n";
+Cliente* VerificacionCredencial() {
+    string usuarioIngresado, contrasenaIngresada;
+    const int MAXintentos = 3;
+    int intentos = 0;
+
+    while (intentos < MAXintentos) {
+        cout << "Ingrese usuario: ";
+        cin >> usuarioIngresado;
+        cout << "Ingrese contraseña: ";
+        cin >> contrasenaIngresada;
+
+        for (auto& u : usuarios) {
+            if (u.usuario == usuarioIngresado && u.contrasena == contrasenaIngresada) {
+                cout << "Bienvenido, " << u.usuario << " (" << u.tipo << ")!\n";
+                return &u;
+            }
+        }
+
+        cout << "Usuario o contraseña incorrectos. Intento " << intentos + 1 << " de " << MAXintentos << endl;
+        intentos++;
+    }
+
+    cout << "Usuario bloqueado por exceso de intentos fallidos.\n";
+    return nullptr;
 }
 
 void MostrarMenu(Cliente &usuario) {
     int opcion;
     do {
-        cout << "\n---- MENU ----\n";
+        cout << "\n---- MENU PRINCIPAL ----\n";
         cout << "1. Gestionar artículos de limpieza\n";
         cout << "2. Cambiar contraseña\n";
         cout << "3. Salir\n";
@@ -234,41 +232,33 @@ void MostrarMenu(Cliente &usuario) {
         switch (opcion) {
             case 1: MenuArticulos(); break;
             case 2: CambiarContrasena(usuario); break;
-            case 3: cout << "Saliendo del sistema...\n"; return;
+            case 3: cout << "Cerrando sesión...\n"; return;
             default: cout << "Opción inválida. Intente nuevamente.\n"; break;
         }
     } while (opcion != 3);
 }
 
 int main() {
-    Cliente usuario = {"", ""};
     int opcion;
 
     while (true) {
-        cout << "\n--- MENU PRINCIPAL ---\n";
+        cout << "\n--- MENU DE INICIO ---\n";
         cout << "1. Iniciar sesión\n";
-        cout << "2. Crear cuenta\n";
-        cout << "3. Salir\n";
+        cout << "2. Salir\n";
         cout << "Seleccione una opción: ";
         cin >> opcion;
 
         switch (opcion) {
-            case 1:
-                if (usuario.usuario.empty()) {
-                    cout << "No hay cuentas registradas. Cree una cuenta primero.\n";
-                } else if (VerificacionCredencial(usuario)) {
-                    MostrarMenu(usuario);
-                }
+            case 1: {
+                Cliente* usuario = VerificacionCredencial();
+                if (usuario) MostrarMenu(*usuario);
                 break;
+            }
             case 2:
-                CrearCuenta(usuario);
-                break;
-            case 3:
                 cout << "Saliendo del programa...\n";
                 return 0;
             default:
-                cout << "Opción inválida. Intente nuevamente.\n";
-                break;
+                cout << "Opción inválida. Intente nuevamente.\n"; break;
         }
     }
 }

@@ -3,9 +3,12 @@
 
 using namespace std;
 
+enum TipoUsuario { ADMINISTRADOR, CLIENTE, VENDEDOR, DEPOSITO };
+
 struct Cliente {
     string usuario;
     string contrasena;
+    TipoUsuario tipo;
 };
 
 struct Articulo {
@@ -19,6 +22,14 @@ vector<Articulo> articulos = {
     {1, "Lavandina x 1L", 875.25, 3000},
     {4, "Detergente x 500mL", 1102.45, 2010},
     {22, "Jabón en polvo x 250g", 650.22, 407}
+};
+
+// Usuarios predefinidos
+vector<Cliente> usuarios = {
+    {"admin", "Admin123!!", ADMINISTRADOR},
+    {"cliente", "Cliente123!!", CLIENTE},
+    {"vendedor", "Vendedor123!!", VENDEDOR},
+    {"deposito", "Deposito123!!", DEPOSITO}
 };
 
 void ListarArticulos() {
@@ -125,58 +136,6 @@ void ComprarArticulo() {
     cout << "No se encontró un artículo con ese ID.\n";
 }
 
-void MenuArticulos() {
-    int opcion;
-    do {
-        cout << "\n--- Gestión de Artículos ---\n";
-        cout << "1. Listar artículos\n";
-        cout << "2. Agregar artículo\n";
-        cout << "3. Editar artículo\n";
-        cout << "4. Eliminar artículo\n";
-        cout << "5. Comprar artículo\n";
-        cout << "6. Volver al menú principal\n";
-        cout << "Seleccione una opción: ";
-        cin >> opcion;
-
-        switch (opcion) {
-            case 1: ListarArticulos(); break;
-            case 2: AgregarArticulo(); break;
-            case 3: EditarArticulo(); break;
-            case 4: EliminarArticulo(); break;
-            case 5: ComprarArticulo(); break;
-            case 6: break;
-            default: cout << "Opción inválida. Intente nuevamente.\n"; break;
-        }
-    } while (opcion != 6);
-}
-
-void PedirCredencial(string &usuario, string &contrasena) {
-    cout << "Ingrese un usuario: ";
-    cin >> usuario;
-    cout << "Ingrese una contraseña: ";
-    cin >> contrasena;
-}
-
-bool VerificacionCredencial(Cliente &usuarioCorrecto) {
-    string usuarioIngresado, contrasenaIngresada;
-    const int MAXintentos = 3;
-    int intentos = 0;
-
-    while (intentos < MAXintentos) {
-        PedirCredencial(usuarioIngresado, contrasenaIngresada);
-        if (usuarioIngresado == usuarioCorrecto.usuario && contrasenaIngresada == usuarioCorrecto.contrasena) {
-            cout << "Bienvenido, " << usuarioCorrecto.usuario << "!\n";
-            return true;
-        } else {
-            cout << "Usuario o contraseña incorrectos. Intento " << intentos + 1 << " de " << MAXintentos << endl;
-        }
-        intentos++;
-    }
-
-    cout << "Usuario bloqueado por exceso de intentos fallidos.\n";
-    return false;
-}
-
 bool ValidarContrasena(const string &contrasena) {
     if (contrasena.length() < 8 || contrasena.length() > 16) return false;
 
@@ -212,63 +171,136 @@ void CambiarContrasena(Cliente &usuario) {
     cout << "Contraseña actualizada exitosamente!\n";
 }
 
-void CrearCuenta(Cliente &usuario) {
-    cout << "\n--- Crear Cuenta ---\n";
-    cout << "Ingrese un nombre de usuario: ";
-    cin >> usuario.usuario;
-    cout << "Ingrese una contraseña: ";
-    cin >> usuario.contrasena;
-    cout << "Cuenta creada exitosamente!\n";
+Cliente* VerificarCredenciales() {
+    string usuario, contrasena;
+    int intentos = 0;
+
+    while (intentos < 3) {
+        cout << "Ingrese usuario: ";
+        cin >> usuario;
+        cout << "Ingrese contraseña: ";
+        cin >> contrasena;
+
+        for (auto &u : usuarios) {
+            if (u.usuario == usuario && u.contrasena == contrasena) {
+                cout << "Bienvenido, " << u.usuario << "!\n";
+                return &u;
+            }
+        }
+
+        cout << "Credenciales incorrectas. Intento " << intentos + 1 << " de 3.\n";
+        intentos++;
+    }
+
+    cout << "Demasiados intentos fallidos.\n";
+    return nullptr;
 }
 
-void MostrarMenu(Cliente &usuario) {
+// Menús por tipo
+void MenuAdministrador(Cliente &usuario) {
     int opcion;
     do {
-        cout << "\n---- MENU ----\n";
-        cout << "1. Gestionar artículos de limpieza\n";
-        cout << "2. Cambiar contraseña\n";
-        cout << "3. Salir\n";
+        cout << "\n--- MENU ADMINISTRADOR ---\n";
+        cout << "1. Listar artículos\n";
+        cout << "2. Agregar artículo\n";
+        cout << "3. Editar artículo\n";
+        cout << "4. Eliminar artículo\n";
+        cout << "5. Cambiar contraseña\n";
+        cout << "6. Salir\n";
         cout << "Seleccione una opción: ";
         cin >> opcion;
 
         switch (opcion) {
-            case 1: MenuArticulos(); break;
-            case 2: CambiarContrasena(usuario); break;
-            case 3: cout << "Saliendo del sistema...\n"; return;
-            default: cout << "Opción inválida. Intente nuevamente.\n"; break;
+            case 1: ListarArticulos(); break;
+            case 2: AgregarArticulo(); break;
+            case 3: EditarArticulo(); break;
+            case 4: EliminarArticulo(); break;
+            case 5: CambiarContrasena(usuario); break;
+            case 6: cout << "Cerrando sesión...\n"; break;
+            default: cout << "Opción inválida.\n"; break;
         }
-    } while (opcion != 3);
+    } while (opcion != 6);
+}
+
+void MenuCliente(Cliente &usuario) {
+    int opcion;
+    do {
+        cout << "\n--- MENU CLIENTE ---\n";
+        cout << "1. Listar artículos\n";
+        cout << "2. Comprar artículo\n";
+        cout << "3. Cambiar contraseña\n";
+        cout << "4. Salir\n";
+        cout << "Seleccione una opción: ";
+        cin >> opcion;
+
+        switch (opcion) {
+            case 1: ListarArticulos(); break;
+            case 2: ComprarArticulo(); break;
+            case 3: CambiarContrasena(usuario); break;
+            case 4: cout << "Cerrando sesión...\n"; break;
+            default: cout << "Opción inválida.\n"; break;
+        }
+    } while (opcion != 4);
+}
+
+void MenuVendedor(Cliente &usuario) {
+    int opcion;
+    do {
+        cout << "\n--- MENU VENDEDOR ---\n";
+        cout << "1. Listar artículos\n";
+        cout << "2. Comprar artículo\n";
+        cout << "3. Cambiar contraseña\n";
+        cout << "4. Salir\n";
+        cout << "Seleccione una opción: ";
+        cin >> opcion;
+
+        switch (opcion) {
+            case 1: ListarArticulos(); break;
+            case 2: ComprarArticulo(); break;
+            case 3: CambiarContrasena(usuario); break;
+            case 4: cout << "Cerrando sesión...\n"; break;
+            default: cout << "Opción inválida.\n"; break;
+        }
+    } while (opcion != 4);
+}
+
+void MenuDeposito(Cliente &usuario) {
+    int opcion;
+    do {
+        cout << "\n--- MENU DEPÓSITO ---\n";
+        cout << "1. Listar artículos\n";
+        cout << "2. Agregar artículo\n";
+        cout << "3. Editar artículo\n";
+        cout << "4. Cambiar contraseña\n";
+        cout << "5. Salir\n";
+        cout << "Seleccione una opción: ";
+        cin >> opcion;
+
+        switch (opcion) {
+            case 1: ListarArticulos(); break;
+            case 2: AgregarArticulo(); break;
+            case 3: EditarArticulo(); break;
+            case 4: CambiarContrasena(usuario); break;
+            case 5: cout << "Cerrando sesión...\n"; break;
+            default: cout << "Opción inválida.\n"; break;
+        }
+    } while (opcion != 5);
+}
+
+void MostrarMenuPorTipo(Cliente &usuario) {
+    switch (usuario.tipo) {
+        case ADMINISTRADOR: MenuAdministrador(usuario); break;
+        case CLIENTE: MenuCliente(usuario); break;
+        case VENDEDOR: MenuVendedor(usuario); break;
+        case DEPOSITO: MenuDeposito(usuario); break;
+    }
 }
 
 int main() {
-    Cliente usuario = {"", ""};
-    int opcion;
-
-    while (true) {
-        cout << "\n--- MENU PRINCIPAL ---\n";
-        cout << "1. Iniciar sesión\n";
-        cout << "2. Crear cuenta\n";
-        cout << "3. Salir\n";
-        cout << "Seleccione una opción: ";
-        cin >> opcion;
-
-        switch (opcion) {
-            case 1:
-                if (usuario.usuario.empty()) {
-                    cout << "No hay cuentas registradas. Cree una cuenta primero.\n";
-                } else if (VerificacionCredencial(usuario)) {
-                    MostrarMenu(usuario);
-                }
-                break;
-            case 2:
-                CrearCuenta(usuario);
-                break;
-            case 3:
-                cout << "Saliendo del programa...\n";
-                return 0;
-            default:
-                cout << "Opción inválida. Intente nuevamente.\n";
-                break;
-        }
+    Cliente* usuarioLogueado = VerificarCredenciales();
+    if (usuarioLogueado) {
+        MostrarMenuPorTipo(*usuarioLogueado);
     }
+
+    return 0;
 }
