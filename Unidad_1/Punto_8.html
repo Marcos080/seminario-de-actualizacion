@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Gestión</title>
+</head>
+<body>
+    <h2>Inicio de Sesión</h2>
+
+    <div id="login">
+        <label for="usuario">Usuario:</label>
+        <input type="text" id="usuario"><br>
+        <label for="contrasena">Contraseña:</label>
+        <input type="password" id="contrasena"><br>
+        <button onclick="iniciarSesion()">Iniciar Sesión</button>
+    </div>
+
+    <div id="menu" style="display: none;">
+        <h2>Menú Principal</h2>
+        <p id="bienvenida"></p>
+        <button onclick="menuArticulos()">Gestionar artículos de limpieza</button>
+        <button onclick="cambiarContrasena()">Cambiar contraseña</button>
+        <button onclick="cerrarSesion()">Cerrar sesión</button>
+    </div>
+
+    <script>
+        const usuarios = [
+            { usuario: "admin", contrasena: "Admin123!!", tipo: "Administrador" },
+            { usuario: "cliente1", contrasena: "Cliente123!!", tipo: "Cliente" },
+            { usuario: "vendedor1", contrasena: "Vendedor123!!", tipo: "Vendedor" },
+            { usuario: "deposito1", contrasena: "Deposito123!!", tipo: "Deposito" }
+        ];
+
+        let usuarioActivo = null;
+        let intentos = 0;
+        const MAX_INTENTOS = 3;
+
+        function iniciarSesion() {
+            const usuario = document.getElementById('usuario').value;
+            const contrasena = document.getElementById('contrasena').value;
+
+            const encontrado = usuarios.find(u => u.usuario === usuario && u.contrasena === contrasena);
+
+            if (encontrado) {
+                usuarioActivo = encontrado;
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('menu').style.display = 'block';
+                document.getElementById('bienvenida').textContent = `Bienvenido, ${encontrado.usuario} (${encontrado.tipo})!`;
+                intentos = 0;
+            } else {
+                intentos++;
+                if (intentos >= MAX_INTENTOS) {
+                    alert("Usuario bloqueado por exceso de intentos fallidos.");
+                    document.getElementById('login').innerHTML = "<p>Acceso bloqueado.</p>";
+                } else {
+                    alert(`Usuario o contraseña incorrectos. Intento ${intentos} de ${MAX_INTENTOS}`);
+                }
+            }
+        }
+
+        function cerrarSesion() {
+            usuarioActivo = null;
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('login').style.display = 'block';
+            document.getElementById('usuario').value = '';
+            document.getElementById('contrasena').value = '';
+        }
+
+        function menuArticulos() {
+            alert("Aquí iría el menú de gestión de artículos...");
+        }
+
+        function cambiarContrasena() {
+            alert("Aquí iría la lógica para cambiar la contraseña...");
+        }
+    </script>
+</body>
+</html>

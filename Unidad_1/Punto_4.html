@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login JS</title>
+</head>
+<body>
+
+<script>
+  const usuario = { usuario: "", contrasena: "" };
+
+  function validarContrasena(contrasena) {
+    if (contrasena.length < 8 || contrasena.length > 16) return false;
+    const tieneMayuscula = /[A-Z]/.test(contrasena);
+    const especiales = "!@#$%^&*()-_=+[]{};:'\"<>,.?/|\\";
+    let contadorEspeciales = 0;
+
+    for (let c of contrasena) {
+      if (especiales.includes(c)) contadorEspeciales++;
+    }
+
+    return tieneMayuscula && contadorEspeciales >= 2;
+  }
+
+  function crearCuenta() {
+    let nuevoUsuario = prompt("Ingrese un nombre de usuario:");
+    let nuevaContrasena;
+    do {
+      nuevaContrasena = prompt("Ingrese una contraseña (8-16 caracteres, al menos 1 mayúscula, al menos 2 símbolos especiales):");
+      if (!validarContrasena(nuevaContrasena)) {
+        alert("La contraseña no cumple con los requisitos de seguridad.");
+      }
+    } while (!validarContrasena(nuevaContrasena));
+
+    usuario.usuario = nuevoUsuario;
+    usuario.contrasena = nuevaContrasena;
+    alert("¡Cuenta creada exitosamente!");
+  }
+
+  function pedirCredencial() {
+    const user = prompt("Ingrese un usuario:");
+    const pass = prompt("Ingrese una contraseña:");
+    return { user, pass };
+  }
+
+  function verificacionCredencial() {
+    const MAXintentos = 3;
+    let intentos = 0;
+
+    while (intentos < MAXintentos) {
+      const { user, pass } = pedirCredencial();
+
+      if (user === usuario.usuario && pass === usuario.contrasena) {
+        alert("Bienvenido, " + usuario.usuario + "!");
+        return true;
+      } else {
+        alert("Usuario o contraseña incorrectos. Intento " + (intentos + 1) + " de " + MAXintentos);
+        intentos++;
+      }
+    }
+
+    alert("Usuario bloqueado por exceso de intentos fallidos.");
+    return false;
+  }
+
+  function cambiarContrasena() {
+    let nuevaContrasena;
+    do {
+      nuevaContrasena = prompt("Ingrese su nueva contraseña (8-16 caracteres, al menos 1 mayúscula, al menos 2 símbolos especiales):");
+      if (!validarContrasena(nuevaContrasena)) {
+        alert("La contraseña no cumple con los requisitos de seguridad.");
+      }
+    } while (!validarContrasena(nuevaContrasena));
+
+    usuario.contrasena = nuevaContrasena;
+    alert("¡Contraseña actualizada exitosamente!");
+  }
+
+  function mostrarMenu() {
+    let opcion;
+    do {
+      opcion = prompt("---- MENU ----\n1. Modificar contraseña\n2. Salir\nSeleccione una opción:");
+      switch (opcion) {
+        case "1":
+          cambiarContrasena();
+          break;
+        case "2":
+          alert("Saliendo al inicio del sistema...");
+          break;
+        default:
+          alert("Opción inválida. Intente nuevamente.");
+      }
+    } while (opcion !== "2");
+  }
+
+  function menuPrincipal() {
+    let opcion;
+    do {
+      opcion = prompt("--- MENU PRINCIPAL ---\n1. Iniciar sesión\n2. Crear cuenta\nSeleccione una opción:");
+      switch (opcion) {
+        case "1":
+          if (!usuario.usuario) {
+            alert("No hay cuentas registradas. Cree una cuenta primero.");
+          } else if (verificacionCredencial()) {
+            mostrarMenu();
+          }
+          break;
+        case "2":
+          crearCuenta();
+          break;
+        default:
+          alert("Opción inválida. Intente nuevamente.");
+      }
+    } while (true);
+  }
+
+  menuPrincipal();
+</script>
+
+
+</body>
+</html>

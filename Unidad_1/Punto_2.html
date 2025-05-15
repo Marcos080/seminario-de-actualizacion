@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login con menú</title>
+</head>
+<body>
+<script>
+
+let UsuarioCorrecto = {
+  usuario: "jose",
+  contraseña: "2468"
+};
+
+function PedirCredencial() {
+  let usuario = prompt("Ingrese un usuario:");
+  let contraseña = prompt("Ingrese una contraseña:");
+  return { usuario, contraseña };
+}
+
+function VerificacionCredencial(usuarioCorrecto) {
+  const MAXintentos = 3;
+  let intentos = 0;
+
+  while (intentos < MAXintentos) {
+    let { usuario, contraseña } = PedirCredencial();
+
+    if (usuario === usuarioCorrecto.usuario && contraseña === usuarioCorrecto.contraseña) {
+      alert("Bienvenido, " + usuarioCorrecto.usuario + "!");
+      return true;
+    } else {
+      alert("Usuario o contraseña incorrectos. Intento " + (intentos + 1) + " de " + MAXintentos);
+    }
+
+    intentos++;
+  }
+
+  alert("Usuario bloqueado por exceso de intentos fallidos.");
+  return false;
+}
+
+function CambiarContraseña(usuario) {
+  let nueva = prompt("Ingrese su nueva contraseña:");
+  usuario.contraseña = nueva;
+  alert("¡Contraseña actualizada exitosamente!");
+}
+
+function MostrarMenu(usuario) {
+  let opcion;
+  do {
+    opcion = parseInt(prompt(
+      "---- MENU ----\n" +
+      "1. Modificar contraseña\n" +
+      "2. Salir\n" +
+      "Seleccione una opción:"
+    ));
+
+    switch (opcion) {
+      case 1:
+        CambiarContraseña(usuario);
+        break;
+      case 2:
+        alert("Saliendo al inicio del sistema...");
+        break;
+      default:
+        alert("Opción inválida. Intente nuevamente.");
+        break;
+    }
+  } while (opcion !== 2);
+}
+
+function main() {
+  while (true) {
+    if (VerificacionCredencial(UsuarioCorrecto)) {
+      MostrarMenu(UsuarioCorrecto);
+    }
+  }
+}
+
+window.onload = main;
+</script>
+</body>
+</html>

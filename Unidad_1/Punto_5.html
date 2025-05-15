@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Usuario y Artículos</title>
+</head>
+<body>
+  <script>
+    const articulos = [
+      { id: 1, nombre: "Lavandina x 1L", precio: 875.25, stock: 3000 },
+      { id: 4, nombre: "Detergente x 500mL", precio: 1102.45, stock: 2010 },
+      { id: 22, nombre: "Jabón en polvo x 250g", precio: 650.22, stock: 407 }
+    ];
+
+    let usuario = { usuario: "", contrasena: "" };
+
+    function pedirCredencial() {
+      const usuario = prompt("Ingrese un usuario:");
+      const contrasena = prompt("Ingrese una contraseña:");
+      return { usuario, contrasena };
+    }
+
+    function validarContrasena(contrasena) {
+      if (contrasena.length < 8 || contrasena.length > 16) return false;
+
+      const tieneMayuscula = /[A-Z]/.test(contrasena);
+      const especiales = /[!@#$%^&*()\[\]{}\-_+=;:'"<>,.?/|\\]/g;
+      const coincidencias = contrasena.match(especiales);
+      const cantidadEspeciales = coincidencias ? coincidencias.length : 0;
+
+      return tieneMayuscula && cantidadEspeciales >= 2;
+    }
+
+    function cambiarContrasena() {
+      let nueva;
+      do {
+        nueva = prompt("Ingrese su nueva contraseña (8-16 caracteres, al menos 1 mayúscula, al menos 2 símbolos especiales):");
+        if (!validarContrasena(nueva)) {
+          alert("La contraseña no cumple con los requisitos.");
+        }
+      } while (!validarContrasena(nueva));
+
+      usuario.contrasena = nueva;
+      alert("¡Contraseña actualizada exitosamente!");
+    }
+
+    function crearCuenta() {
+      alert("--- Crear Cuenta ---");
+      usuario.usuario = prompt("Ingrese un nombre de usuario:");
+      let contrasena;
+      do {
+        contrasena = prompt("Ingrese una contraseña (8-16 caracteres, al menos 1 mayúscula, al menos 2 símbolos especiales):");
+        if (!validarContrasena(contrasena)) {
+          alert("La contraseña no cumple con los requisitos.");
+        }
+      } while (!validarContrasena(contrasena));
+      usuario.contrasena = contrasena;
+      alert("¡Cuenta creada exitosamente!");
+    }
+
+    function verificacionCredencial() {
+      const MAXintentos = 3;
+      for (let intentos = 0; intentos < MAXintentos; intentos++) {
+        const { usuario: u, contrasena: c } = pedirCredencial();
+        if (u === usuario.usuario && c === usuario.contrasena) {
+          alert(`¡Bienvenido, ${usuario.usuario}!`);
+          return true;
+        } else {
+          alert(`Credenciales incorrectas. Intento ${intentos + 1} de ${MAXintentos}`);
+        }
+      }
+      alert("Usuario bloqueado por exceso de intentos fallidos.");
+      return false;
+    }
+
+    function mostrarArticulos() {
+      let texto = "--- Artículos de Limpieza ---\n";
+      for (const art of articulos) {
+        texto += `ID: ${art.id} | Nombre: ${art.nombre} | Precio: $${art.precio} | Stock: ${art.stock}\n`;
+      }
+      alert(texto);
+    }
+
+    function mostrarMenu() {
+      let opcion;
+      do {
+        opcion = prompt("---- MENÚ ----\n1. Modificar contraseña\n2. Salir\nSeleccione una opción:");
+        switch (opcion) {
+          case "1":
+            cambiarContrasena();
+            break;
+          case "2":
+            alert("Saliendo al inicio del sistema...");
+            break;
+          default:
+            alert("Opción inválida. Intente nuevamente.");
+            break;
+        }
+      } while (opcion !== "2");
+    }
+
+    function menuPrincipal() {
+      let opcion;
+      while (true) {
+        opcion = prompt("--- MENÚ PRINCIPAL ---\n1. Iniciar sesión\n2. Crear cuenta\n3. Ver artículos de limpieza\nSeleccione una opción:");
+        switch (opcion) {
+          case "1":
+            if (!usuario.usuario) {
+              alert("No hay cuentas registradas. Cree una cuenta primero.");
+            } else if (verificacionCredencial()) {
+              mostrarMenu();
+            }
+            break;
+          case "2":
+            crearCuenta();
+            break;
+          case "3":
+            mostrarArticulos();
+            break;
+          default:
+            alert("Opción inválida. Intente nuevamente.");
+            break;
+        }
+      }
+    }
+
+    menuPrincipal();
+  </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login JS</title>
+</head>
+<body>
+<script>
+    
+  const usuarioCorrecto = { usuario: "jose", contraseña: "2468" };
+  let intentos = 0;
+  const MAX_INTENTOS = 3;
+
+  function verificarCredenciales() {
+    const usuario = document.getElementById("usuario").value;
+    const contraseña = document.getElementById("contraseña").value;
+    const mensaje = document.getElementById("mensajeLogin");
+
+    if (usuario === usuarioCorrecto.usuario && contraseña === usuarioCorrecto.contraseña) {
+      mensaje.textContent = "Bienvenido, " + usuario + "!";
+      document.getElementById("loginContainer").style.display = "none";
+      document.getElementById("menuContainer").style.display = "block";
+      intentos = 0;
+    } else {
+      intentos++;
+      if (intentos >= MAX_INTENTOS) {
+        mensaje.textContent = "Usuario bloqueado por exceso de intentos fallidos.";
+        document.getElementById("botonLogin").disabled = true;
+      } else {
+        mensaje.textContent = `Usuario o contraseña incorrectos. Intento ${intentos} de ${MAX_INTENTOS}`;
+      }
+    }
+  }
+
+  function mostrarCambioContraseña() {
+    document.getElementById("menuContainer").style.display = "none";
+    document.getElementById("cambioContainer").style.display = "block";
+  }
+
+  function validarContraseña(contraseña) {
+    if (contraseña.length < 8 || contraseña.length > 16) return false;
+
+    const tieneMayuscula = /[A-Z]/.test(contraseña);
+    const especiales = "!@#$%^&*()-_=+[]{};:'\"<>,.?/|\\";
+    let contadorEspeciales = 0;
+
+    for (let c of contraseña) {
+      if (especiales.includes(c)) contadorEspeciales++;
+    }
+
+    return tieneMayuscula && contadorEspeciales >= 2;
+  }
+
+  function cambiarContraseña() {
+    const nueva = document.getElementById("nuevaContraseña").value;
+    const mensaje = document.getElementById("mensajeCambio");
+
+    if (!validarContraseña(nueva)) {
+      mensaje.textContent = "La contraseña no cumple con los requisitos de seguridad.";
+      return;
+    }
+
+    usuarioCorrecto.contraseña = nueva;
+    mensaje.textContent = "¡Contraseña actualizada exitosamente!";
+  }
+
+  function salir() {
+    document.getElementById("menuContainer").style.display = "none";
+    document.getElementById("loginContainer").style.display = "block";
+    document.getElementById("usuario").value = "";
+    document.getElementById("contraseña").value = "";
+    document.getElementById("mensajeLogin").textContent = "";
+    document.getElementById("botonLogin").disabled = false;
+    intentos = 0;
+  }
+</script>
+
+</body>
+</html>

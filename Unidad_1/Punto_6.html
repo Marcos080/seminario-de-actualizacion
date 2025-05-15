@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Artículos</title>
+</head>
+<body>
+<script>
+class Cliente {
+    constructor(usuario = "", contrasena = "") {
+        this.usuario = usuario;
+        this.contrasena = contrasena;
+    }
+}
+
+class Articulo {
+    constructor(id, nombre, precio, stock) {
+        this.id = id;
+        this.nombre = nombre;
+        this.precio = precio;
+        this.stock = stock;
+    }
+}
+
+let articulos = [
+    new Articulo(1, "Lavandina x 1L", 875.25, 3000),
+    new Articulo(4, "Detergente x 500mL", 1102.45, 2010),
+    new Articulo(22, "Jabón en polvo x 250g", 650.22, 407)
+];
+
+function pedirCredencial() {
+    let usuario = prompt("Ingrese un usuario:");
+    let contrasena = prompt("Ingrese una contraseña:");
+    return { usuario, contrasena };
+}
+
+function verificacionCredencial(usuarioCorrecto) {
+    const MAXintentos = 3;
+    for (let intentos = 0; intentos < MAXintentos; intentos++) {
+        let { usuario, contrasena } = pedirCredencial();
+        if (usuario === usuarioCorrecto.usuario && contrasena === usuarioCorrecto.contrasena) {
+            alert(`¡Bienvenido, ${usuarioCorrecto.usuario}!`);
+            return true;
+        } else {
+            alert(`Usuario o contraseña incorrectos. Intento ${intentos + 1} de ${MAXintentos}`);
+        }
+    }
+    alert("Usuario bloqueado por exceso de intentos fallidos.");
+    return false;
+}
+
+function validarContrasena(contrasena) {
+    if (contrasena.length < 8 || contrasena.length > 16) return false;
+
+    let tieneMayuscula = /[A-Z]/.test(contrasena);
+    let contadorEspeciales = (contrasena.match(/[!@#$%^&*()\-=+[\]{};:'"<>.,?\/|\\]/g) || []).length;
+
+    return tieneMayuscula && contadorEspeciales >= 2;
+}
+
+function cambiarContrasena(usuario) {
+    let nueva;
+    do {
+        nueva = prompt("Ingrese su nueva contraseña (8-16 caracteres, al menos 1 mayúscula, al menos 2 símbolos especiales):");
+        if (!validarContrasena(nueva)) {
+            alert("La contraseña no cumple con los requisitos de seguridad.");
+        }
+    } while (!validarContrasena(nueva));
+    usuario.contrasena = nueva;
+    alert("Contraseña actualizada exitosamente.");
+}
+
+function crearCuenta(usuario) {
+    let nuevoUsuario = prompt("Ingrese un nombre de usuario:");
+    let nuevaContrasena;
+    do {
+        nuevaContrasena = prompt("Ingrese una contraseña (8-16 caracteres, al menos 1 mayúscula, al menos 2 símbolos especiales):");
+        if (!validarContrasena(nuevaContrasena)) {
+            alert("La contraseña no cumple con los requisitos de seguridad.");
+        }
+    } while (!validarContrasena(nuevaContrasena));
+    usuario.usuario = nuevoUsuario;
+    usuario.contrasena = nuevaContrasena;
+    alert("Cuenta creada exitosamente.");
+}
+
+function listarArticulos() {
+    if (articulos.length === 0) {
+        alert("No hay artículos registrados.");
+        return;
+    }
+    let lista = "--- Listado de Artículos ---\n";
+    for (let art of articulos) {
+        lista += `ID: ${art.id} | Nombre: ${art.nombre} | Precio: $${art.precio} | Stock: ${art.stock}\n`;
+    }
+    alert(lista);
+}
+
+function agregarArticulo() {
+    let id = parseInt(prompt("Ingrese ID:"));
+    let nombre = prompt("Ingrese Nombre:");
+    let precio = parseFloat(prompt("Ingrese Precio:"));
+    let stock = parseInt(prompt("Ingrese Stock:"));
+    articulos.push(new Articulo(id, nombre, precio, stock));
+    alert("Artículo agregado correctamente.");
+}
+
+function editarArticulo() {
+    let id = parseInt(prompt("Ingrese el ID del artículo a editar:"));
+    let articulo = articulos.find(a => a.id === id);
+    if (articulo) {
+        articulo.nombre = prompt(`Nuevo Nombre (${articulo.nombre}):`) || articulo.nombre;
+        articulo.precio = parseFloat(prompt(`Nuevo Precio (${articulo.precio}):`)) || articulo.precio;
+        articulo.stock = parseInt(prompt(`Nuevo Stock (${articulo.stock}):`)) || articulo.stock;
+        alert("Artículo actualizado correctamente.");
+    } else {
+        alert("No se encontró un artículo con ese ID.");
+    }
+}
+
+function eliminarArticulo() {
+    let id = parseInt(prompt("Ingrese el ID del artículo a eliminar:"));
+    let index = articulos.findIndex(a => a.id === id);
+    if (index !== -1) {
+        articulos.splice(index, 1);
+        alert("Artículo eliminado correctamente.");
+    } else {
+        alert("No se encontró un artículo con ese ID.");
+    }
+}
+
+function mostrarMenu(usuario) {
+    let opcion;
+    do {
+        opcion = parseInt(prompt("---- MENU ----\n1. Modificar contraseña\n2. Gestionar artículos de limpieza\n3. Salir\nSeleccione una opción:"));
+        switch (opcion) {
+            case 1:
+                cambiarContrasena(usuario);
+                break;
+            case 2:
+                let subopcion;
+                do {
+                    subopcion = parseInt(prompt("--- Gestión de Artículos ---\n1. Listar artículos\n2. Agregar artículo\n3. Editar artículo\n4. Eliminar artículo\n5. Volver al menú principal"));
+                    switch (subopcion) {
+                        case 1: listarArticulos(); break;
+                        case 2: agregarArticulo(); break;
+                        case 3: editarArticulo(); break;
+                        case 4: eliminarArticulo(); break;
+                        case 5: break;
+                        default: alert("Opción inválida."); break;
+                    }
+                } while (subopcion !== 5);
+                break;
+            case 3:
+                alert("Saliendo del sistema...");
+                return;
+            default:
+                alert("Opción inválida.");
+        }
+    } while (opcion !== 3);
+}
+
+(function main() {
+    let usuario = new Cliente();
+    let opcion;
+    while (true) {
+        opcion = parseInt(prompt("--- MENU PRINCIPAL ---\n1. Iniciar sesión\n2. Crear cuenta\nSeleccione una opción:"));
+        switch (opcion) {
+            case 1:
+                if (usuario.usuario && verificacionCredencial(usuario)) {
+                    mostrarMenu(usuario);
+                } else {
+                    alert("No hay cuentas registradas. Cree una cuenta primero.");
+                }
+                break;
+            case 2:
+                crearCuenta(usuario);
+                break;
+            default:
+                alert("Opción inválida.");
+        }
+    }
+})();
+</script>
+</body>
+</html>

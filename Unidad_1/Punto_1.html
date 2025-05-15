@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login JS</title>
+</head>
+<body>
+<script>
+
+const UsuarioCorrecto = {
+  usuario: "jose",
+  contraseña: "2468"
+};
+
+function PedirCredencial() {
+  let usuario = prompt("Ingrese un usuario:");
+  let contraseña = prompt("Ingrese una contraseña:");
+  return { usuario, contraseña };
+}
+
+function VerificacionCredencial(usuarioCorrecto) {
+  const MAXintentos = 3;
+  let intentos = 0;
+
+  while (intentos < MAXintentos) {
+    let { usuario, contraseña } = PedirCredencial();
+
+    if (usuario === usuarioCorrecto.usuario && contraseña === usuarioCorrecto.contraseña) {
+      alert("Bienvenido, " + usuarioCorrecto.usuario + "!");
+      return true;
+    } else {
+      alert("Usuario o contraseña incorrectos. Intento " + (intentos + 1) + " de " + MAXintentos);
+    }
+
+    intentos++;
+  }
+
+  alert("Usuario bloqueado por exceso de intentos fallidos.");
+  return false;
+}
+
+
+function main() {
+  VerificacionCredencial(UsuarioCorrecto);
+}
+
+window.onload = main;
+</script>
+</body>
+</html>

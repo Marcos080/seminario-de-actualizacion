@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistema de Gestión</title>
+</head>
+<body>
+  <script>
+    const TipoUsuario = {
+      ADMINISTRADOR: "Administrador",
+      CLIENTE: "Cliente",
+      VENDEDOR: "Vendedor",
+      DEPOSITO: "Depósito"
+    };
+
+    let articulos = [
+      { id: 1, nombre: "Lavandina x 1L", precio: 875.25, stock: 3000 },
+      { id: 4, nombre: "Detergente x 500mL", precio: 1102.45, stock: 2010 },
+      { id: 22, nombre: "Jabón en polvo x 250g", precio: 650.22, stock: 407 }
+    ];
+
+    let usuarios = [
+      { usuario: "admin", contrasena: "Admin123!!", tipo: TipoUsuario.ADMINISTRADOR },
+      { usuario: "cliente", contrasena: "Cliente123!!", tipo: TipoUsuario.CLIENTE },
+      { usuario: "vendedor", contrasena: "Vendedor123!!", tipo: TipoUsuario.VENDEDOR },
+      { usuario: "deposito", contrasena: "Deposito123!!", tipo: TipoUsuario.DEPOSITO }
+    ];
+
+    function listarArticulos() {
+      if (articulos.length === 0) {
+        alert("No hay artículos registrados.");
+        return;
+      }
+
+      let mensaje = "--- Listado de Artículos ---\n";
+      for (const art of articulos) {
+        mensaje += `ID: ${art.id} | Nombre: ${art.nombre} | Precio: $${art.precio} | Stock: ${art.stock}\n`;
+      }
+      alert(mensaje);
+    }
+
+    function agregarArticulo() {
+      const id = parseInt(prompt("Ingrese ID:"));
+      const nombre = prompt("Ingrese Nombre:");
+      const precio = parseFloat(prompt("Ingrese Precio:"));
+      const stock = parseInt(prompt("Ingrese Stock:"));
+
+      articulos.push({ id, nombre, precio, stock });
+      alert("Artículo agregado correctamente!");
+    }
+
+    function editarArticulo() {
+      const id = parseInt(prompt("Ingrese el ID del artículo a editar:"));
+      const articulo = articulos.find(a => a.id === id);
+
+      if (!articulo) {
+        alert("No se encontró un artículo con ese ID.");
+        return;
+      }
+
+      articulo.nombre = prompt(`Nuevo Nombre (${articulo.nombre}):`) || articulo.nombre;
+      articulo.precio = parseFloat(prompt(`Nuevo Precio (${articulo.precio}):`)) || articulo.precio;
+      articulo.stock = parseInt(prompt(`Nuevo Stock (${articulo.stock}):`)) || articulo.stock;
+      alert("Artículo actualizado correctamente!");
+    }
+
+    function eliminarArticulo() {
+      const id = parseInt(prompt("Ingrese el ID del artículo a eliminar:"));
+      const index = articulos.findIndex(a => a.id === id);
+
+      if (index === -1) {
+        alert("No se encontró un artículo con ese ID.");
+        return;
+      }
+
+      articulos.splice(index, 1);
+      alert("Artículo eliminado correctamente!");
+    }
+
+    function comprarArticulo() {
+      const id = parseInt(prompt("Ingrese el ID del artículo que desea comprar:"));
+      const articulo = articulos.find(a => a.id === id);
+
+      if (!articulo) {
+        alert("No se encontró un artículo con ese ID.");
+        return;
+      }
+
+      if (articulo.stock <= 0) {
+        alert("Lo sentimos, este artículo está agotado.");
+        return;
+      }
+
+      const cantidad = parseInt(prompt("Ingrese la cantidad a comprar:"));
+      if (cantidad > articulo.stock) {
+        alert(`No hay suficiente stock disponible. Stock actual: ${articulo.stock}`);
+        return;
+      }
+
+      const total = cantidad * articulo.precio;
+      const confirmacion = prompt(`El total a pagar es: $${total}. ¿Confirmar compra? (S/N):`);
+
+      if (confirmacion.toLowerCase() === "s") {
+        articulo.stock -= cantidad;
+        alert(`Compra realizada con éxito! Stock restante: ${articulo.stock}`);
+      } else {
+        alert("Compra cancelada.");
+      }
+    }
+
+    function validarContrasena(contrasena) {
+      if (contrasena.length < 8 || contrasena.length > 16) return false;
+
+      const tieneMayuscula = /[A-Z]/.test(contrasena);
+      const especiales = contrasena.match(/[!@#$%^&*()\[\]{};:'"<>.,?\/\\|+=_-]/g);
+
+      return tieneMayuscula && especiales && especiales.length >= 2;
+    }
+
+    function cambiarContrasena(usuario) {
+      let nuevaContrasena;
+      do {
+        nuevaContrasena = prompt("Ingrese su nueva contraseña (8-16 caracteres, al menos 1 mayúscula, al menos 2 símbolos especiales):");
+        if (!validarContrasena(nuevaContrasena)) {
+          alert("La contraseña no cumple con los requisitos de seguridad. Intente nuevamente.");
+        }
+      } while (!validarContrasena(nuevaContrasena));
+
+      usuario.contrasena = nuevaContrasena;
+      alert("Contraseña actualizada exitosamente!");
+    }
+
+    function verificarCredenciales() {
+      let intentos = 0;
+
+      while (intentos < 3) {
+        const usuarioInput = prompt("Ingrese usuario:");
+        const contrasenaInput = prompt("Ingrese contraseña:");
+
+        const usuarioEncontrado = usuarios.find(u => u.usuario === usuarioInput && u.contrasena === contrasenaInput);
+        if (usuarioEncontrado) {
+          alert(`Bienvenido, ${usuarioEncontrado.usuario}!`);
+          return usuarioEncontrado;
+        }
+
+        alert(`Credenciales incorrectas. Intento ${intentos + 1} de 3.`);
+        intentos++;
+      }
+
+      alert("Demasiados intentos fallidos.");
+      return null;
+    }
+
+    function menuAdministrador(usuario) {
+      let opcion;
+      do {
+        opcion = prompt(
+          "--- MENU ADMINISTRADOR ---\n" +
+          "1. Listar artículos\n" +
+          "2. Agregar artículo\n" +
+          "3. Editar artículo\n" +
+          "4. Eliminar artículo\n" +
+          "5. Cambiar contraseña\n" +
+          "6. Salir"
+        );
+
+        switch (opcion) {
+          case "1": listarArticulos(); break;
+          case "2": agregarArticulo(); break;
+          case "3": editarArticulo(); break;
+          case "4": eliminarArticulo(); break;
+          case "5": cambiarContrasena(usuario); break;
+          case "6": alert("Cerrando sesión..."); break;
+          default: alert("Opción inválida."); break;
+        }
+      } while (opcion !== "6");
+    }
+
+    function menuCliente(usuario) {
+      let opcion;
+      do {
+        opcion = prompt(
+          "--- MENU CLIENTE ---\n" +
+          "1. Listar artículos\n" +
+          "2. Comprar artículo\n" +
+          "3. Cambiar contraseña\n" +
+          "4. Salir"
+        );
+
+        switch (opcion) {
+          case "1": listarArticulos(); break;
+          case "2": comprarArticulo(); break;
+          case "3": cambiarContrasena(usuario); break;
+          case "4": alert("Cerrando sesión..."); break;
+          default: alert("Opción inválida."); break;
+        }
+      } while (opcion !== "4");
+    }
+
+    function menuVendedor(usuario) {
+      let opcion;
+      do {
+        opcion = prompt(
+          "--- MENU VENDEDOR ---\n" +
+          "1. Listar artículos\n" +
+          "2. Comprar artículo\n" +
+          "3. Cambiar contraseña\n" +
+          "4. Salir"
+        );
+
+        switch (opcion) {
+          case "1": listarArticulos(); break;
+          case "2": comprarArticulo(); break;
+          case "3": cambiarContrasena(usuario); break;
+          case "4": alert("Cerrando sesión..."); break;
+          default: alert("Opción inválida."); break;
+        }
+      } while (opcion !== "4");
+    }
+
+    function menuDeposito(usuario) {
+      let opcion;
+      do {
+        opcion = prompt(
+          "--- MENU DEPÓSITO ---\n" +
+          "1. Listar artículos\n" +
+          "2. Agregar artículo\n" +
+          "3. Editar artículo\n" +
+          "4. Cambiar contraseña\n" +
+          "5. Salir"
+        );
+
+        switch (opcion) {
+          case "1": listarArticulos(); break;
+          case "2": agregarArticulo(); break;
+          case "3": editarArticulo(); break;
+          case "4": cambiarContrasena(usuario); break;
+          case "5": alert("Cerrando sesión..."); break;
+          default: alert("Opción inválida."); break;
+        }
+      } while (opcion !== "5");
+    }
+
+    function mostrarMenuPorTipo(usuario) {
+      switch (usuario.tipo) {
+        case TipoUsuario.ADMINISTRADOR:
+          menuAdministrador(usuario);
+          break;
+        case TipoUsuario.CLIENTE:
+          menuCliente(usuario);
+          break;
+        case TipoUsuario.VENDEDOR:
+          menuVendedor(usuario);
+          break;
+        case TipoUsuario.DEPOSITO:
+          menuDeposito(usuario);
+          break;
+      }
+    }
+
+    function main() {
+      const usuarioLogueado = verificarCredenciales();
+      if (usuarioLogueado) {
+        mostrarMenuPorTipo(usuarioLogueado);
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>
