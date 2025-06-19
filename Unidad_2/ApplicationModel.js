@@ -8,4 +8,4 @@ class ApplicationModel {
   }
 }
 
-export { ApplicationModel };
+export { ApplicationModel, UsuarioModel, ArticuloModel };
