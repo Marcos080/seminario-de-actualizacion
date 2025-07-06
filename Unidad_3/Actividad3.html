@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pricing DOM</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
+</head>
+<body>
+</body>
+
+<script>
+  class PricingTable extends HTMLElement {
+    constructor() {
+      super();
+
+      this.container = document.createElement("div");
+      this.container.className = "w3-container";
+      this.container.style.marginTop = "30px";
+
+      const title = document.createElement("h2");
+      title.textContent = "Responsive Pricing Tables";
+      this.container.appendChild(title);
+
+      const row = document.createElement("div");
+      row.className = "w3-row-padding";
+
+      const plans = [
+        {
+          name: "Basic",
+          color: "w3-black",
+          price: 10,
+          storage: "10GB",
+          emails: "10",
+          domains: "10",
+        },
+        {
+          name: "Pro",
+          color: "w3-green",
+          price: 25,
+          storage: "25GB",
+          emails: "25",
+          domains: "25",
+        },
+        {
+          name: "Premium",
+          color: "w3-black",
+          price: 50,
+          storage: "50GB",
+          emails: "50",
+          domains: "50",
+        }
+      ];
+
+      plans.forEach(plan => {
+        const col = document.createElement("div");
+        col.className = "w3-third w3-margin-bottom";
+
+        const ul = document.createElement("ul");
+        ul.className = "w3-ul w3-border w3-center w3-hover-shadow";
+
+        const liTitle = document.createElement("li");
+        liTitle.className = `${plan.color} w3-xlarge w3-padding-32`;
+        liTitle.textContent = plan.name;
+
+        const liStorage = this.crearItem(`<b>${plan.storage}</b> Storage`);
+        const liEmails = this.crearItem(`<b>${plan.emails}</b> Emails`);
+        const liDomains = this.crearItem(`<b>${plan.domains}</b> Domains`);
+        const liSupport = this.crearItem(`<b>Endless</b> Support`);
+
+        const liPrice = document.createElement("li");
+        liPrice.className = "w3-padding-16";
+        const h2 = document.createElement("h2");
+        h2.className = "w3-wide";
+        h2.textContent = `$ ${plan.price}`;
+        const span = document.createElement("span");
+        span.className = "w3-opacity";
+        span.textContent = "per month";
+        liPrice.appendChild(h2);
+        liPrice.appendChild(span);
+
+        const liButton = document.createElement("li");
+        liButton.className = "w3-light-grey w3-padding-24";
+        const btn = document.createElement("button");
+        btn.className = "w3-button w3-green w3-padding-large";
+        btn.textContent = "Sign Up";
+        liButton.appendChild(btn);
+
+        ul.append(liTitle, liStorage, liEmails, liDomains, liSupport, liPrice, liButton);
+        col.appendChild(ul);
+        row.appendChild(col);
+      });
+
+      this.container.appendChild(row);
+    }
+
+    crearItem(htmlContent) {
+      const li = document.createElement("li");
+      li.className = "w3-padding-16";
+      li.innerHTML = htmlContent;
+      return li;
+    }
+
+    connectedCallback() {
+      this.appendChild(this.container);
+    }
+  }
+
+  customElements.define("x-pricing", PricingTable);
+
+   function main()
+   {
+    document.body.appendChild(new PricingTable());
+   }
+
+   window.onload = main;
+  
+</script>
+</html>

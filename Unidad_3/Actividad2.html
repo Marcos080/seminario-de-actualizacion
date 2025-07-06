@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login DOM</title>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
+</head>
+<body>
+</body>
+
+<script>
+  class CustomLogin extends HTMLElement {
+    constructor() {
+      super();
+
+      this.container = document.createElement("div");
+      this.container.className = "w3-container";
+      this.container.style.display = "flex";
+      this.container.style.flexDirection = "column";
+
+      const title = document.createElement("h1");
+      title.textContent = "Login Example";
+      title.className = "w3-container w3-teal w3-padding";
+      this.container.appendChild(title);
+
+      const form = document.createElement("form");
+      form.className = "w3-container w3-card-4 w3-padding";
+      form.style.width = "300px";
+
+      form.appendChild(this.crearCampo("text", "Name"));
+
+      form.appendChild(this.crearCampo("password", "Password"));
+
+      form.appendChild(this.crearRadio("gender", "male", "Male", true));
+      form.appendChild(this.crearRadio("gender", "female", "Female"));
+      form.appendChild(this.crearRadio("gender", "", "Don't know (Disabled)", false, true));
+
+      const pCheck = document.createElement("p");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.className = "w3-check";
+      checkbox.checked = true;
+      const labelCheck = document.createElement("label");
+      labelCheck.textContent = " Stay logged in";
+      pCheck.append(checkbox, labelCheck);
+      form.appendChild(pCheck);
+
+      const pBtn = document.createElement("p");
+      const button = document.createElement("button");
+      button.type = "submit";
+      button.className = "w3-button w3-section w3-teal w3-ripple";
+      button.textContent = "Log in";
+      pBtn.appendChild(button);
+      form.appendChild(pBtn);
+
+      this.container.appendChild(form);
+    }
+
+    crearCampo(tipo, labelText) {
+      const p = document.createElement("p");
+      const input = document.createElement("input");
+      input.type = tipo;
+      input.className = "w3-input";
+      input.required = true;
+      const label = document.createElement("label");
+      label.textContent = labelText;
+      p.append(input, label);
+      return p;
+    }
+
+    crearRadio(name, value, labelText, checked = false, disabled = false) {
+      const p = document.createElement("p");
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.className = "w3-radio";
+      input.name = name;
+      input.value = value;
+      if (checked) input.checked = true;
+      if (disabled) input.disabled = true;
+      const label = document.createElement("label");
+      label.textContent = " " + labelText;
+      p.append(input, label);
+      return p;
+    }
+
+    connectedCallback()
+    {
+      this.appendChild(this.container);
+    }
+  }
+
+  customElements.define("x-login", CustomLogin);
+
+  function main()
+  {
+    document.body.appendChild(new CustomLogin());
+  }
+
+  window.onload = main;
+  
+</script>
+</html>

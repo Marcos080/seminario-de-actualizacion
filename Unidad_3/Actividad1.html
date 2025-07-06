@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>   </title>
+	</head>
+	<body>
+		
+	</body>
+
+	<script>
+
+	class CustomCalculator extends HTMLElement
+	{
+		constructor()
+		{
+			super();
+
+			this.display = document.createElement('input');
+
+			this.btn1 = document.createElement('button');
+            this.btn2 = document.createElement('button');
+            this.btn3 = document.createElement('button');
+            this.btn4 = document.createElement('button');
+            this.btn5 = document.createElement('button');
+            this.btn6 = document.createElement('button');
+            this.btn7 = document.createElement('button');
+            this.btn8 = document.createElement('button');
+            this.btn9 = document.createElement('button');
+            this.btn0 = document.createElement('button');
+
+			this.btnPlus = document.createElement('button');
+            this.btnLess = document.createElement('button');
+            this.btnMultiply = document.createElement('button');
+            this.btnDivision = document.createElement('button');
+
+			this.btnCalculate = document.createElement('button');
+
+			this.display.type = 'text'; 
+
+			this.btn1.innerText = '1'; 
+            this.btn2.innerText = "2"; 
+            this.btn3.innerText = "3";
+            this.btn4.innerText = "4";
+            this.btn5.innerText = "5";
+            this.btn6.innerText = "6";
+            this.btn7.innerText = "7";
+            this.btn8.innerText = "8";
+            this.btn9.innerText = "9";
+            this.btn0.innerText = "0";
+
+			this.btnPlus.innerText = '+'; 
+            this.btnLess.innerText = '-';
+            this.btnMultiply.innerText = '*';
+            this.btnDivision.innerText = '/';
+
+			this.btnCalculate.innerText = '='; 
+		}
+
+		onButtonCalculateClick(event)
+		{
+			this.display.value = eval(this.display.value);
+		}
+
+		onButton1Click(event)
+		{
+			this.display.value += '1';
+		}
+
+        onButton2Click(event)
+        {
+            this.display.value += "2";
+        }
+
+        onButton3Click(event)
+        {
+            this.display.value += "3";
+        }
+
+          onButton4Click(event)
+        {
+            this.display.value += "4";
+        }
+
+          onButton5Click(event)
+        {
+            this.display.value += "5";
+        }
+
+          onButton6Click(event)
+        {
+            this.display.value += "6";
+        }
+
+          onButton7Click(event)
+        {
+            this.display.value += "7";
+        }
+
+          onButton8Click(event)
+        {
+            this.display.value += "8";
+        }
+
+          onButton9Click(event)
+        {
+            this.display.value += "9";
+        }
+
+          onButton0Click(event)
+        {
+            this.display.value += "0";
+        }
+
+
+		onButtonPlusClick(event)
+		{
+			this.display.value += '+';
+		}
+
+        onButtonLessClick(event)
+		{
+			this.display.value += '-';
+		}
+
+        onButtonMultiplyClick(event)
+		{
+			this.display.value += '*';
+		}
+
+        onButtonDivisionClick(event)
+		{
+			this.display.value += '/';
+		}
+
+		connectedCallback()
+		{
+
+            const container = document.createElement('div');
+            container.style.display = 'flex';
+            container.style.flexDirection = 'column';                                       
+            container.style.alignItems = 'center';
+            container.style.gap = '5px';
+
+
+            container.appendChild(this.display);
+
+            const row1 = document.createElement('div');
+            row1.style.display = 'flex';
+            row1.append(this.btn7, this.btn8, this.btn9, this.btnDivision);
+
+            const row2 = document.createElement('div');
+            row2.style.display = 'flex';
+            row2.append(this.btn4, this.btn5, this.btn6, this.btnMultiply);
+
+            const row3 = document.createElement('div');
+            row3.style.display = 'flex';
+            row3.append(this.btn1, this.btn2, this.btn3, this.btnCalculate);
+
+            const row4 = document.createElement('div');
+            row4.style.display = 'flex';
+            row4.append(this.btn0, this.btnPlus, this.btnLess);
+
+            container.append(row1, row2, row3, row4);
+
+         this.appendChild(container);
+
+         /*   this.appendChild(this.display);
+
+			this.appendChild(this.btn1);
+            this.appendChild(this.btn2);
+            this.appendChild(this.btn3);
+            this.appendChild(this.btn4);
+            this.appendChild(this.btn5);
+            this.appendChild(this.btn6);
+            this.appendChild(this.btn7);
+            this.appendChild(this.btn8);
+            this.appendChild(this.btn9);
+            this.appendChild(this.btn0);
+            //ecuaciones
+			this.appendChild(this.btnPlus);
+            this.appendChild(this.btnLess);
+            this.appendChild(this.btnMultiply);
+            this.appendChild(this.btnDivision);
+             //calcula
+			this.appendChild(this.btnCalculate);   */
+
+
+			this.btn1.onclick = this.onButton1Click.bind(this);
+            this.btn2.onclick = this.onButton2Click.bind(this);
+            this.btn3.onclick = this.onButton3Click.bind(this);
+            this.btn4.onclick = this.onButton4Click.bind(this);
+            this.btn5.onclick = this.onButton5Click.bind(this);
+            this.btn6.onclick = this.onButton6Click.bind(this);
+            this.btn7.onclick = this.onButton7Click.bind(this);
+            this.btn8.onclick = this.onButton8Click.bind(this);
+            this.btn9.onclick = this.onButton9Click.bind(this);
+            this.btn0.onclick = this.onButton0Click.bind(this);
+
+			this.btnPlus.onclick = this.onButtonPlusClick.bind(this);
+            this.btnLess.onclick = this.onButtonLessClick.bind(this);
+            this.btnMultiply.onclick = this.onButtonMultiplyClick.bind(this);
+            this.btnDivision.onclick = this.onButtonDivisionClick.bind(this);
+
+			this.btnCalculate.onclick = this.onButtonCalculateClick.bind(this);
+		}
+
+		disconnectedCallback()
+		{
+			//Se va a ejecutar siempre que se quite el elemento del documento
+		}
+
+		adoptedCallback()
+		{
+			//Se va a ejecutar siempre que el elemento se cambie de documento.
+		}
+
+		connectedMoveCallback()
+		{
+			//Se ejecuta cuando se mueve el elemento dentro del DOM
+		}
+
+		static get observableAttributes()
+		{
+			//Solo para publicar cuáles son los atributos que tendría disponible el webcomponent
+			//Si es utilizado a través de código HTML
+			//Ejemplo: <mi-elemento sabor="acido"> </mi-elemento>
+
+			return ['sabor']
+		}
+
+		attributeChangedCallback(attr, newvalue, oldvalue )
+		{
+			//Manejador de cambios de los valores de los atributos personalizados
+		}
+	}
+
+	customElements.define('x-calculator', CustomCalculator );
+
+	
+
+	function main()
+	{
+		document.body.appendChild( new CustomCalculator() );
+	}
+
+	window.onload = main;
+
+	</script>
+</html>
