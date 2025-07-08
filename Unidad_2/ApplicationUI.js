@@ -1,33 +1,74 @@
 import { ApplicationModel } from './ApplicationModel.js';
-import { StorageManager } from './StorageManager.js';
+// import { StorageManager } from './StorageManager.js'; 
 
 class ApplicationUI {
   constructor() {
     this.app = new ApplicationModel();
-
-    const usuariosGuardados = StorageManager.cargarUsuarios();
-    if (usuariosGuardados) {
-      this.app.usuarios = usuariosGuardados;
-    }
-
-    const articulosGuardados = StorageManager.cargarArticulos();
-    if (articulosGuardados) {
-      this.app.articulos = articulosGuardados;
-    }
-
     this.usuarioActual = null;
   }
 
-  iniciar() {
+  async iniciar() {
+    await this._cargarUsuariosDesdeIndexedDB();
+
     let user = prompt("Usuario:");
     let pass = prompt("Contraseña:");
     this.usuarioActual = this.app.usuarios.verificarCredenciales(user, pass);
+
     if (this.usuarioActual) {
       alert("Bienvenido, " + this.usuarioActual.usuario);
       this.menuPrincipal();
     } else {
       alert("Credenciales incorrectas.");
     }
+  }
+
+  async _cargarUsuariosDesdeIndexedDB() {
+    const db = await this._abrirDB();
+    const usuarios = await this._obtenerUsuariosDesdeIndexedDB(db);
+
+    if (usuarios.length === 0) {
+      await this._guardarUsuariosEnIndexedDB(db, this.app.usuarios.usuarios);
+      this.usuariosIndexed = this.app.usuarios.usuarios;
+    } else {
+      this.app.usuarios.usuarios = usuarios;
+    }
+  }
+
+  async _abrirDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open('MiApp', 1);
+
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains('usuarios')) {
+          db.createObjectStore('usuarios', { keyPath: 'usuario' });
+        }
+      };
+
+      request.onsuccess = (event) => resolve(event.target.result);
+      request.onerror = (event) => reject(event.target.error);
+    });
+  }
+
+  async _obtenerUsuariosDesdeIndexedDB(db) {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(['usuarios'], 'readonly');
+      const store = tx.objectStore('usuarios');
+      const request = store.getAll();
+
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = (e) => reject(e);
+    });
+  }
+
+  async _guardarUsuariosEnIndexedDB(db, usuarios) {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(['usuarios'], 'readwrite');
+      const store = tx.objectStore('usuarios');
+      usuarios.forEach(u => store.add(u));
+      tx.oncomplete = () => resolve();
+      tx.onerror = (e) => reject(e);
+    });
   }
 
   menuPrincipal() {
@@ -96,7 +137,6 @@ class ApplicationUI {
     this.menuPrincipal();
   }
 
-
   _cambiarContrasena() {
     let nueva = prompt("Nueva contraseña:");
     if (this.app.usuarios.cambiarContrasena(this.usuarioActual, nueva)) {
@@ -151,10 +191,10 @@ class ApplicationUI {
     alert(usuarios);
   }
 
-   guardarDatos() {
-    StorageManager.guardarUsuarios(this.app.usuarios);
-    StorageManager.guardarArticulos(this.app.articulos);
-  }
+  // guardarDatos() {
+  //   StorageManager.guardarUsuarios(this.app.usuarios);
+  //   StorageManager.guardarArticulos(this.app.articulos);
+  // }
 }
 
 export { ApplicationUI };
